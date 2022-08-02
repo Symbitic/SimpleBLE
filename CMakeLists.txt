@@ -3,10 +3,16 @@ cmake_minimum_required(VERSION 3.16.0)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/find")
 
+include(GenerateExportHeader)
+
 project(SimpleBLE VERSION 0.1 LANGUAGES CXX)
 
 option(LIBFMT_VENDORIZE "Enable vendorized libfmt" ON)
 option(SIMPLEBLUEZ_VENDORIZE "Enable vendorized SimpleBluez" ON)
+
+set(CMAKE_C_VISIBILITY_PRESET hidden)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
 # Include all necessary CMake modules
 find_package(fmt REQUIRED)
@@ -33,6 +39,7 @@ set(SIMPLEBLE_USER_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(
     SIMPLEBLE_INCLUDES
+    ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/builders
     ${CMAKE_CURRENT_SOURCE_DIR}/src/external
@@ -274,6 +281,8 @@ foreach(OPTION ${PUBLIC_LINK_OPTIONS})
     target_link_options(simpleble PUBLIC ${OPTION})
     target_link_options(simpleble-c PUBLIC ${OPTION})
 endforeach()
+
+generate_export_header(simpleble)
 
 # Export the variables needed by the parent project
 if(NOT ${STANDALONE})
